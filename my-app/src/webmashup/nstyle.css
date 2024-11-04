@@ -1,0 +1,15 @@
+/* Custom CSS */
+.progress-bar {
+    width: 0;
+    animation: fillProgressBar 3s ease-in-out forwards;
+  }
+  
+  @keyframes fillProgressBar {
+    0% {
+      width: 0;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+  

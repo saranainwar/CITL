@@ -1,0 +1,269 @@
+.timeline {
+    border-radius: 0px 0px 0px 0px;
+    display: flex;
+    flex-direction: column;
+    padding-top:50px;
+  }
+  .div {
+  }
+  @media (max-width: 991px) {
+    .div {
+      max-width: 100%;
+      margin-right: 2px;
+    }
+  }
+  .div-2 {
+    gap: 20px;
+    display: flex;
+  }
+  @media (max-width: 991px) {
+    .div-2 {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0px;
+    }
+  }
+  .column {
+    display: flex;
+    flex-direction: column;
+    line-height: normal;
+    width: 15%;
+    margin-left: 0px;
+  }
+  @media (max-width: 991px) {
+    .column {
+      width: 100%;
+    }
+  }
+  .img {
+    aspect-ratio: 1.19;
+    object-fit: contain;
+    object-position: center;
+    width: 154px;
+    max-width: 100%;
+    flex-grow: 1;
+  }
+  @media (max-width: 991px) {
+    .img {
+      margin-top: 20px;
+    }
+  }
+  .column-2 {
+    display: flex;
+    flex-direction: column;
+    line-height: normal;
+    width: 85%;
+    margin-left: 20px;
+  }
+  @media (max-width: 991px) {
+    .column-2 {
+      width: 100%;
+    }
+  }
+  .div-3 {
+    border-radius: 69px;
+    background-color: rgba(172, 188, 255, 0.41);
+    display: flex;
+    width: 842px;
+    max-width: 100%;
+    height: 100px;
+    margin: 6px auto 0;
+  
+  }
+  @media (max-width: 991px) {
+    .div-3 {
+      margin-top: 26px;
+    }
+  }
+  .div-4 {
+    display: flex;
+    margin-top: 54px;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+     height: 100px;
+  }
+  @media (max-width: 991px) {
+    .div-4 {
+      margin: 40px 2px 0 0;
+    }
+  }
+  .div-5 {
+    border-radius: 69px;
+    background-color: rgba(172, 188, 255, 0.41);
+    align-self: end;
+    display: flex;
+    margin-top: 21px;
+    width: 842px;
+    max-width: 100%;
+    height: 100px;
+  }
+  .img-2 {
+    aspect-ratio: 0.94;
+    object-fit: contain;
+    object-position: center;
+    width: 135px;
+    max-width: 100%;
+  }
+  .div-6 {
+    display: flex;
+    margin-top: 75px;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  @media (max-width: 991px) {
+    .div-6 {
+      margin-top: 40px;
+    }
+  }
+  .img-3 {
+    aspect-ratio: 1.13;
+    object-fit: contain;
+    object-position: center;
+    width: 137px;
+    max-width: 100%;
+  }
+  .div-7 {
+    border-radius: 69px;
+    background-color: rgba(172, 188, 255, 0.41);
+    display: flex;
+    width: 842px;
+    max-width: 100%;
+    height: 100px;
+    margin-top:54px
+  }
+  .div-8 {
+    display: flex;
+    margin-top: 54px;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+     height: 100px;
+  }
+  @media (max-width: 991px) {
+    .div-8 {
+      margin: 40px 2px 0 0;
+    }
+  }
+  .div-9 {
+    border-radius: 69px;
+    background-color: rgba(172, 188, 255, 0.41);
+    display: flex;
+    width: 842px;
+    max-width: 100%;
+    height: 100px;
+    margin: auto 0;
+  }
+  .img-4 {
+    aspect-ratio: 1.03;
+    object-fit: contain;
+    object-position: center;
+    width: 146px;
+    max-width: 100%;
+  }
+  .div-3 ,.div-5,.div-7,.div-9
+  {
+  
+  width:700px;
+  height:100px;
+  }
+
+  .hidden {
+opacity: 0;
+transform: translateX(100%);
+transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.visible {
+opacity: 1;
+transform: translateX(0);
+}
+
+.hidden-left {
+opacity: 0;
+transform: translateX(-100%);
+transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.visible-left {
+opacity: 1;
+transform: translateX(0);
+}
+
+/* Define the keyframes for the animation */
+@keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  /* Apply animation classes */
+  .div,
+  .div-4,
+  .div-6 {
+    opacity: 0;
+    transform: translateX(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  
+  .div.visible {
+    animation: slideInLeft 0.6s forwards;
+  }
+  
+  .div-4.visible {
+    animation: slideInRight 0.6s forwards;
+  }
+  
+  .div-6.visible {
+    animation: slideInLeft 0.6s forwards;
+  }
+
+.div, .div-3, .div-6
+{
+
+    margin-top:54px;
+    margin-bottom: 10px;
+
+}
+.div-4{
+    margin-top:0px;
+}
+.div
+{
+    margin-top:20px;
+}
+  
+.img-2
+{
+    margin-right: 145px;
+}
+.img
+{
+    margin-left:85px;
+}
+.img-3
+{
+    margin-left: 50px;
+}
+.div-6
+{
+    gap:0px;
+}
+  
