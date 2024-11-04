@@ -1,0 +1,191 @@
+
+  .comment-card {
+    display: flex;
+    max-width: 855px;
+    flex-direction: column;
+    font-family: Manrope, sans-serif;
+  }
+
+  .comment-content {
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .avatar {
+    aspect-ratio: 1;
+    object-fit: contain;
+    object-position: center;
+    width: 48px;
+    border-radius: 50%;
+  }
+
+  .comment-body {
+    border-radius: 10px;
+    background-color: rgba(239, 147, 107, 1);
+    display: flex;
+    min-width: 240px;
+    flex-direction: column;
+    flex: 1;
+    flex-basis: 0%;
+    padding: 10px 20px;
+  }
+
+  .comment-header {
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+    gap: 20px;
+    line-height: 1.6;
+    flex-wrap: wrap;
+  }
+
+  .author-name {
+    color: var(--Gray-900, #0b0f19);
+    font-feature-settings: "liga" off, "clig" off;
+    font-size: 16px;
+    font-weight: 700;
+    flex: 1;
+    flex-basis: 0%;
+  }
+
+  .comment-date {
+    font-feature-settings: "liga" off, "clig" off;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--Gray-600, #9397ad);
+    font-weight: 400;
+    text-align: right;
+  }
+
+  .comment-text {
+    color: var(--Gray-900, #0b0f19);
+    font-feature-settings: "liga" off, "clig" off;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
+    margin-top: 20px;
+  }
+
+  .comment-meta {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+    color: var(--Gray-600, #9397ad);
+    font-weight: 400;
+    white-space: nowrap;
+    text-align: right;
+    line-height: 1.6;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    padding: 5px 30px;
+  }
+
+  .meta-item {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: flex-start;
+    margin: auto 0;
+  }
+
+  .meta-icon {
+    aspect-ratio: 1;
+    object-fit: contain;
+    object-position: center;
+    width: 18px;
+    align-self: stretch;
+    margin: auto 0;
+  }
+
+  .meta-count {
+    font-feature-settings: "liga" off, "clig" off;
+    align-self: stretch;
+    margin: auto 0;
+  }
+
+  @media (max-width: 991px) {
+    .comment-content,
+    .comment-body,
+    .comment-header,
+    .author-name,
+    .comment-text,
+    .comment-meta {
+      max-width: 100%;
+    }
+
+    .comment-meta {
+      white-space: initial;
+      padding: 0 20px;
+    }
+
+    .meta-item {
+      white-space: initial;
+    }
+  }
+  .comment-card {
+    display: flex;
+    max-width: 855px;
+    flex-direction: column;
+    font-family: 'Manrope', sans-serif;
+    margin-bottom: 20px; /* Ensures space between cards */
+}
+
+.orange-background .comment-body {
+    background-color: rgba(239, 147, 107, 1); /* Orange background */
+}
+
+.green-background .comment-body {
+    background-color: rgba(107, 239, 116, 1); /* Green background */
+}
+
+.comment-content {
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.comment-body {
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 10px 20px;
+}
+
+/* Additional styles remain unchanged */
+
+.comment-section-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* Space between input and cards */
+    padding: 20px; /* Padding around the entire section */
+    max-width: 800px; /* Maximum width for better alignment */
+    margin: 0 auto; /* Centering horizontally */
+}
+
+/* Ensure CommentInput and CommentCard have margin to separate them */
+.comment-input-container, .comment-card {
+    width: 100%;
+    margin-bottom: 10px; /* Adds bottom margin to each component */
+}
+
+/* Specific backgrounds for comment cards */
+.orange-background .comment-body {
+    background-color: rgba(239, 147, 107, 1); /* Orange background */
+}
+
+.green-background .comment-body {
+    background-color: rgba(107, 239, 116, 1); /* Green background */
+}
+
+/* Rest of the styles for comment content, body, meta, etc., remains unchanged */

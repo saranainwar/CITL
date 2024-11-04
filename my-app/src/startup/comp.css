@@ -1,0 +1,17 @@
+.main_content {
+    display: flex;
+  /* This spreads out the children evenly */
+    align-items: flex-start; /* Aligns children at the top of the container */
+    width: 100%; /* Ensures the container takes full width of its parent */
+    gap:100px  ;
+    margin-left:50px;
+}
+  .InvestorsHistory, .FinancialMetrics {
+    flex: 1;  /* Each child will take up equal space in the container */
+    padding: 10px; /* Provides some spacing around the content */
+    box-sizing: border-box; /* Includes padding in the width calculation */
+  }
+  .c{
+margin-left: 320px;
+margin-top: 70px;
+  }

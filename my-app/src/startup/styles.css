@@ -1,0 +1,140 @@
+
+
+  .financial-metrics {
+    display: flex;
+    max-width: 651px;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: Inter, sans-serif;
+   
+    margin-top:40px;
+    margin-right:0px;
+    margin-left: 170px;
+  }
+
+  .metrics-row {
+    display: flex;
+    width: 100%;
+    max-width: 542px;
+    
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 991px) {
+    .metrics-row {
+      max-width: 100%;
+    }
+  }
+
+  .metric-card {
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid var(--Primary-Gray-300, #d2d5da);
+    background: var(--Primary-Base-White, #fff);
+    display: flex;
+    gap: 40px 100px;
+    overflow: hidden;
+    color: var(--Primary-Base-Black, #000);
+    flex-grow: 1;
+    flex-basis: auto;
+    padding: 16px 21px;
+  }
+
+  @media (max-width: 991px) {
+    .metric-card {
+      padding-right: 20px;
+    }
+  }
+
+  .metric-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .metric-title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.28px;
+  }
+
+  .metric-value {
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.3;
+    letter-spacing: -0.6px;
+    align-self: start;
+    margin-top: 4px;
+  }
+
+  .metric-chart {
+    aspect-ratio: 1.19;
+    object-fit: contain;
+    object-position: center;
+    width: 70px;
+    align-self: start;
+  }
+
+  .metric-label {
+    color: rgba(64, 46, 122, 1);
+    font-size: 20px;
+    font-weight: 800;
+    text-align: center;
+    margin: auto 0;
+  }
+
+  .wide-metric-card {
+    border-radius: 8px;
+    border: 1px solid var(--Primary-Gray-300, #d2d5da);
+    background: var(--Primary-Base-White, #fff);
+    align-self: end;
+    display: flex;
+    margin-top: 49px;
+    width: 395px;
+    max-width: 100%;
+    align-items: start;
+    gap: 20px;
+    overflow: hidden;
+    color: var(--Primary-Base-Black, #000);
+    justify-content: space-between;
+    padding: 6px 6px;
+  }
+
+  @media (max-width: 991px) {
+    .wide-metric-card {
+      padding-right: 20px;
+      margin-top: 40px;
+    }
+  }
+
+  .wide-metric-content {
+    display: flex;
+    margin-top: 4px;
+    flex-direction: column;
+  }
+
+  .wide-metric-chart {
+    aspect-ratio: 1.35;
+    object-fit: contain;
+    object-position: center;
+    width: 66px;
+  }
+
+  .metrics-group {
+    align-self: start;
+    display: flex;
+   
+    flex-wrap: wrap;
+   
+  }
+
+  @media (max-width: 991px) {
+    .metrics-group {
+      margin-top: 40px;
+    }
+  }
+
+  .right
+  {
+margin-left: 150px;
+  }
