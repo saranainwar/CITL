@@ -1,12 +1,10 @@
-// src/index.js
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
-import { SocketProvider } from "./SocketContext";
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App.jsx'
+import './index.css'
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <SocketProvider>
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
     <App />
-  </SocketProvider>
-);
+  </StrictMode>,
+)
