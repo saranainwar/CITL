@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import IHeader from '../investorside/IHeader';
 
 const InvestorConnect = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -138,8 +139,10 @@ const InvestorConnect = () => {
   }
 
   return (
+    <>
+    <IHeader></IHeader>
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Investor Connect</h1>
+      <h1 className="text-3xl font-bold mb-6">Connect with Startups</h1>
 
       {error && (
         <div className="mb-6 p-4 bg-red-100 text-red-700 rounded">
@@ -380,6 +383,7 @@ const InvestorConnect = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

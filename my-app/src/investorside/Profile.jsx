@@ -3,6 +3,8 @@ import profilepicPlaceholder from '../investorside/naval_profile.jpeg'; // Place
 import cover from '../investorside/naval_cover.jpg';
 import axios from 'axios'
 import { useParams, useLocation } from 'react-router-dom';
+import IHeader from './IHeader';
+
 const InvestorProfilePage = () => {
     const [profile, setProfile] = useState(null);
     const { email } = useParams(); // Extract email from URL params
@@ -29,21 +31,9 @@ const InvestorProfilePage = () => {
       }
 
   return (
+    <>
+    <IHeader></IHeader>
     <div className="max-w-5xl mx-auto ">
-      <nav className="flex justify-between items-center w-full max-md:ml max-md:w-full">
-        <div className="text-3xl mt-5 ml-5 font-extrabold text-orange-700">Pitchers</div>
-        <div className="flex space-x-9  text-lg font-semibold text-indigo-900 ">
-          <a href="/" className='hover:font-bold'>Profile</a>
-          <a href="/startup_search" className='hover:font-bold' >Explore Startups</a>
-          <a href="/investorconnect" className='hover:font-bold'>Connect</a>
-        </div>
-
-        <div>
-          <img src={profile.profilePhoto || profilepicPlaceholder} alt="Profile" className="w-10 h-10 rounded-full" />
-          <a className='text-xs text-orange-400 font-bold'>Log out</a>
-        </div>
-      </nav>
-
       <header className="mt-2 bg-gray-100 pb-8 mb-6 rounded">
         <div className="relative">
           <img src={cover} alt="Cover" className="w-full h-48 object-cover rounded-lg" />
@@ -58,7 +48,7 @@ const InvestorProfilePage = () => {
             </div>
           </div>
           <button className="border-2 border-blue-600 text-blue-600 font-semibold px-4 py-2 rounded-lg mr-4">
-            <a href="/editprofile">Edit Profile</a>
+            <a href="/investor_profile">Edit Profile</a>
           </button>
         </div>
       </header>
@@ -184,6 +174,7 @@ const InvestorProfilePage = () => {
 
      
     </div>
+    </>
   );
 };
 
