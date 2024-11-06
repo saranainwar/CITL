@@ -1,0 +1,40 @@
+
+version: '3.8'
+
+services:
+  backend:
+    build: ../CITL/backend  # Adjusted relative path
+    ports:
+      - "3000:3000"
+    networks:
+      - pitchers_network
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/mydatabase
+    depends_on:
+      - mongodb
+
+  frontend:
+    build: ../CITL/my-app  # Adjusted relative path
+    ports:
+      - "5173:5173"
+    networks:
+      - pitchers_network
+    environment:
+      REACT_APP_API_URL: http://backend:3000
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - pitchers_network
+    volumes:
+      - mongo-data:/data/db
+
+networks:
+  pitchers_network:  # Using your custom network name
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
