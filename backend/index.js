@@ -47,12 +47,13 @@ passport.use(new GoogleStrategy({
         if (!user) {
             user = new User({
                 googleId: profile.id,
-                userId: profile.id,  // Use profile.id as the userId, ensure it's unique
+                userId: profile.displayName,  // Use profile.id as the userId, ensure it's unique
                 name: profile.displayName,
                 email: profile.emails[0].value,
                 role: 'startup'  // Assign a default role
             });
             await user.save();
+
         }
         done(null, user);
     } catch (error) {
@@ -90,13 +91,14 @@ app.get("/auth/google", passport.authenticate('google', { scope: ['profile', 'em
 app.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: 'http://localhost:5173/login' }), async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
+        console.log(user);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
         console.log(user.role);
         // Redirect based on user role
         if (user.role === 'investor') {
-            return res.redirect(`http://localhost:5173/investor/${user.email}`);
+            return res.redirect(`http://localhost:5173/investor/${user._id}`);
         } else if (user.role === 'startup') {
             return res.redirect(`http://localhost:5173/startup_profile/${user._id}`);
         } else {
@@ -360,6 +362,7 @@ app.get('/find/startups', async (req, res) => {
         const username=await User.findOne({_id:userId});
 
         const startups = await Startup.findOne({title:username.userId});
+
         console.log(startups);
         res.json(startups);
     } catch (error) {
