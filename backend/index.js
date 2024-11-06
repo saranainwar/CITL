@@ -280,13 +280,13 @@ app.get('/api/news', async (req, res) => {
         totalfundInvested: numericFields.totalfundInvested,
         averageReturnOnInvestment: numericFields.averageReturnOnInvestment,
         yearsOfExperience: numericFields.yearsOfExperience,
-        geographicPreference: geographicPreference ? geographicPreference.split(',') : [],
-        exitHistory: exitHistory ? exitHistory.split(',') : [],
-        keyAchievements: keyAchievements ? keyAchievements.split(',') : [],
+        geographicPreference: geographicPreference ? geographicPreference : [],
+        exitHistory: exitHistory ? exitHistory : [],
+        keyAchievements: keyAchievements ? keyAchievements : [],
         investmentRange,
-        topInvestments: topInvestments ? topInvestments.split(',') : [],
+        topInvestments: topInvestments ? topInvestments : [],
         profilePhoto: req.file ? req.file.buffer : null,
-        industriesOfInterest: industriesOfInterest ? industriesOfInterest.split(',') : [],
+        industriesOfInterest: industriesOfInterest ? industriesOfInterest : [],
     });
   
       await profile.save();
@@ -300,12 +300,12 @@ app.get('/api/news', async (req, res) => {
 
 // Display profile route
 app.get('/profile', async (req, res) => {
-    const { userid } = req.query;
-    console.log(userid);
+    const { userId } = req.query;
+    console.log(userId);
     try {
         // Find the profile by email
-        const profile = await Profile.findOne({ userid });
-        console.log(profile);
+        const profile = await Profile.findOne({ userId });
+        
         if (!profile) {
             return res.status(404).json({ message: 'Profile not found' });
         }
