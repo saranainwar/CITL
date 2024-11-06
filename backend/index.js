@@ -273,6 +273,7 @@ app.get('/api/news', async (req, res) => {
     };
   
     try {
+
       let profilePhotoUrl = null;
 
       // If a profile photo is provided, upload to Cloudinary
@@ -289,6 +290,7 @@ app.get('/api/news', async (req, res) => {
         
         profilePhotoUrl = result.secure_url; // Get the secure URL of the uploaded image
       }
+
 
       // Create or update profile based on your application logic
       const profile = new Profile({
@@ -312,9 +314,11 @@ app.get('/api/news', async (req, res) => {
         keyAchievements: keyAchievements ? keyAchievements : [],
         investmentRange,
         topInvestments: topInvestments ? topInvestments : [],
+
         profilePhoto: profilePhotoUrl, // Store Cloudinary URL
         industriesOfInterest: industriesOfInterest ? industriesOfInterest : [],
       });
+
   
       await profile.save();
       res.status(201).json({ message: 'Profile updated successfully' });
@@ -323,6 +327,7 @@ app.get('/api/news', async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   });
+
 
 // Display profile route
 app.get('/profile', async (req, res) => {

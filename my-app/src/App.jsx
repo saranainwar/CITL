@@ -4,7 +4,7 @@ import Homepage from './Homepage'
 import LoginPage from './login/LoginPage'
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import RegistrationPage from './Register/RegistrationPage';
+import RegistrationPage from './register/RegistrationPage';
 import Startup from './startup/Startup';
 
 import PitchersApp from './explore_startup/PitchersApp';
