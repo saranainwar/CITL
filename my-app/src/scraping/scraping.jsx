@@ -20,17 +20,18 @@ const StockAnalysis = () => {
         .slice(1)
         .map(row => {
           const [ticker, companyName, currentPrice, percentChangeValue, percentChangePercent] = row.split(',');
+  
           return {
-            ticker: ticker.trim(),
-            companyName: companyName.trim(),
-            currentPrice: parseFloat(currentPrice.replace(/,/g, '').trim()),
-            percentChangeValue: parseFloat(percentChangeValue.trim()),
-            percentChangePercent: parseFloat(percentChangePercent.replace(/[()%]/g, '').trim()),
+            ticker: ticker ? ticker.trim() : '',
+            companyName: companyName ? companyName.trim() : '',
+            currentPrice: currentPrice ? parseFloat(currentPrice.replace(/,/g, '').trim()) : null,
+            percentChangeValue: percentChangeValue ? parseFloat(percentChangeValue.trim()) : null,
+            percentChangePercent: percentChangePercent ? parseFloat(percentChangePercent.replace(/[()%]/g, '').trim()) : null,
             marketCap: Math.random() * 1000000000 // Example random market cap
           };
         })
         .filter(item => item.ticker); // Remove any items with missing ticker
-
+  
       console.log("Parsed Data:", parsedData); // Debugging line
       setStockData(parsedData);
     } catch (error) {

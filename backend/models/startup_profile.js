@@ -16,11 +16,11 @@ const startupSchema = new mongoose.Schema({
   returnOnInvestment: { type: Number },
   mission: { type: String },
   companyDescription: { type: String },
-  grossMargin: { type: Number },
-  netMargin: { type: Number },
-  ebitda: { type: Number },
-  lifetimeSales: { type: Number },
-  companyValuation: { type: Number },
+  grossMargin: { type: Number, default: 0 },
+  netMargin: { type: Number, default: 0 },
+  ebitda: { type: Number, default: 0 },
+  lifetimeSales: { type: Number, default: 0 },
+  companyValuation: { type: Number, default: 0 },
 
   // Investors as an array of objects
   investors: [{
@@ -28,8 +28,7 @@ const startupSchema = new mongoose.Schema({
     amount: { type: Number, required: true },
   }],
 
-  // Profile photo (stored as buffer)
-  profilePhoto: { type: Buffer },
+  profilePhoto: { type: String },
 }, {
   timestamps: true, // Adds createdAt and updatedAt timestamps automatically
 });

@@ -31,9 +31,9 @@ const Startup = () => {
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
         const mockTimelineData = months.map((month, index) => ({
           name: month,
-          grossMargin: response.data.grossMargin + (Math.random() * 5 - 2.5),
-          netMargin: response.data.netMargin + (Math.random() * 5 - 2.5),
-          ebitda: response.data.ebitda + (Math.random() * 5 - 2.5),
+          grossMargin: (response.data.grossMargin + (Math.random() * 5 - 2.5))||0,
+          netMargin:( response.data.netMargin + (Math.random() * 5 - 2.5))||0,
+          ebitda: (response.data.ebitda + (Math.random() * 5 - 2.5))||0,
         }));
         setTimelineData(mockTimelineData);
         setLoading(false);
@@ -48,9 +48,9 @@ const Startup = () => {
   const COLORS = ['#402e7a', '#c95827', '#ea9525'];
 
   const pieData = startupData ? [
-    { name: 'Gross Margin', value: startupData.grossMargin },
-    { name: 'Net Margin', value: startupData.netMargin },
-    { name: 'EBITDA', value: startupData.ebitda }
+    { name: 'Gross Margin', value: startupData.grossMargin||0 },
+    { name: 'Net Margin', value: startupData.netMargin || 0},
+    { name: 'EBITDA', value: startupData.ebitda || 0}
   ] : [];
 
   if (loading) {

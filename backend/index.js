@@ -47,12 +47,13 @@ passport.use(new GoogleStrategy({
         if (!user) {
             user = new User({
                 googleId: profile.id,
-                userId: profile.id,  // Use profile.id as the userId, ensure it's unique
+                userId: profile.displayName,  // Use profile.id as the userId, ensure it's unique
                 name: profile.displayName,
                 email: profile.emails[0].value,
                 role: 'startup'  // Assign a default role
             });
             await user.save();
+
         }
         done(null, user);
     } catch (error) {
@@ -78,6 +79,14 @@ passport.deserializeUser(async (id, done) => {
 // Initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
+const cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+  cloud_name: 'dpxltvoqv',
+  api_key: '284189174857999',
+  api_secret: 'ul6K_1_-XMuEpGBVsWMMHOIQS50'
+});
+
 
 // MongoDB connection
 mongoose.connect('mongodb+srv://maureenmiranda22:PqxEHalWziPVqy7n@cluster0.ive9g.mongodb.net/citl?retryWrites=true&w=majority&appName=Cluster0')
@@ -90,13 +99,14 @@ app.get("/auth/google", passport.authenticate('google', { scope: ['profile', 'em
 app.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: 'http://localhost:5173/login' }), async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
+        console.log(user);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
         console.log(user.role);
         // Redirect based on user role
         if (user.role === 'investor') {
-            return res.redirect(`http://localhost:5173/investor/${user.email}`);
+            return res.redirect(`http://localhost:5173/investor/${user._id}`);
         } else if (user.role === 'startup') {
             return res.redirect(`http://localhost:5173/startup_profile/${user._id}`);
         } else {
@@ -131,7 +141,7 @@ app.post('/authorize/login', async (req, res) => {
             // Determine redirect URL based on user role
             let redirectUrl;
             if (user.role === 'investor') {
-                redirectUrl = `http://localhost:5173/investor/${user.email}`;
+                redirectUrl = `http://localhost:5173/investor/${user._id}`;
             } else if (user.role === 'startup') {
                 redirectUrl = `http://localhost:5173/startup_profile/${user._id}`;
             } else {
@@ -199,7 +209,7 @@ app.post('/authorize/register', async (req, res) => {
         });
 
         // Send a success message
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).json({ message: 'User registered successfully', _id: newUser._id  });
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ message: 'Internal server error' });
@@ -228,8 +238,61 @@ app.get('/api/news', async (req, res) => {
     }
   });
   
-app.post('/profile/update', upload.single('profilePhoto'), async (req, res) => {
+  app.post('/profile/update', upload.single('profilePhoto'), async (req, res) => {
     const {
+     userId,
+      title,
+      email,
+      contactNumber,
+      companyFounded,
+      shortDescription,
+      bio,
+      gender,
+      birthdate,
+      location,
+      returnOnInvestment,
+      totalInvestments,
+      totalfundInvested,
+      averageReturnOnInvestment,
+      yearsOfExperience,
+      geographicPreference,
+      exitHistory,
+      keyAchievements,
+      investmentRange,
+      topInvestments,
+      industriesOfInterest,
+    } = req.body;
+  
+    // Parse any numerical values from strings
+    const numericFields = {
+      totalInvestments: Number(totalInvestments),
+      totalfundInvested: Number(totalfundInvested),
+      averageReturnOnInvestment: Number(averageReturnOnInvestment),
+      yearsOfExperience: Number(yearsOfExperience),
+      returnOnInvestment: Number(returnOnInvestment),
+    };
+  
+    try {
+      let profilePhotoUrl = null;
+
+      // If a profile photo is provided, upload to Cloudinary
+      if (req.file) {
+        const result = await new Promise((resolve, reject) => {
+          cloudinary.uploader.upload_stream(
+            { folder: "profile_photos", resource_type: "image" },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          ).end(req.file.buffer);
+        });
+        
+        profilePhotoUrl = result.secure_url; // Get the secure URL of the uploaded image
+      }
+
+      // Create or update profile based on your application logic
+      const profile = new Profile({
+        userId,
         title,
         email,
         contactNumber,
@@ -239,42 +302,36 @@ app.post('/profile/update', upload.single('profilePhoto'), async (req, res) => {
         gender,
         birthdate,
         location,
-        returnOnInvestment,
-    } = req.body; // req.body is now populated correctly
-
-    console.log(title + " " + email); // Should log the title and email correctly
-
-    try {
-        const profile = new Profile({
-            title,
-            email,
-            contactNumber,
-            companyFounded,
-            shortDescription,
-            bio,
-            gender,
-            birthdate,
-            location,
-            returnOnInvestment,
-            profilePhoto: req.file ? req.file.buffer : null, // Handle file if it exists
-        });
-
-        await profile.save();
-        res.status(201).json({ message: 'Profile updated successfully' });
+        returnOnInvestment: numericFields.returnOnInvestment,
+        totalInvestments: numericFields.totalInvestments,
+        totalfundInvested: numericFields.totalfundInvested,
+        averageReturnOnInvestment: numericFields.averageReturnOnInvestment,
+        yearsOfExperience: numericFields.yearsOfExperience,
+        geographicPreference: geographicPreference ? geographicPreference : [],
+        exitHistory: exitHistory ? exitHistory : [],
+        keyAchievements: keyAchievements ? keyAchievements : [],
+        investmentRange,
+        topInvestments: topInvestments ? topInvestments : [],
+        profilePhoto: profilePhotoUrl, // Store Cloudinary URL
+        industriesOfInterest: industriesOfInterest ? industriesOfInterest : [],
+      });
+  
+      await profile.save();
+      res.status(201).json({ message: 'Profile updated successfully' });
     } catch (error) {
-        console.error('Error updating profile:', error);
-        res.status(500).json({ message: 'Internal server error' });
+      console.error('Error updating profile:', error);
+      res.status(500).json({ message: 'Internal server error' });
     }
-});
+  });
 
 // Display profile route
 app.get('/profile', async (req, res) => {
-    const { email } = req.query;
-    console.log(email);
+    const { userId } = req.query;
+    console.log(userId);
     try {
         // Find the profile by email
-        const profile = await Profile.findOne({ email });
-        console.log(profile);
+        const profile = await Profile.findOne({ userId });
+        
         if (!profile) {
             return res.status(404).json({ message: 'Profile not found' });
         }
@@ -291,28 +348,50 @@ app.post('/startupProfile/update', upload.single('profilePhoto'), async (req, re
     const { personalDetail, companyDetail, investors } = req.body;
 
     try {
-        // Parse JSON strings back into objects
+        // Parse the incoming JSON strings into objects
         const parsedPersonalDetail = JSON.parse(personalDetail);
         const parsedCompanyDetail = JSON.parse(companyDetail);
         const parsedInvestors = JSON.parse(investors);
+
+        let profilePhotoUrl = null;
+
+        // If there's a profile photo, upload it to Cloudinary
+        if (req.file) {
+            // Use cloudinary uploader's promise-based API
+            const result = await new Promise((resolve, reject) => {
+                cloudinary.uploader.upload_stream(
+                    {
+                        folder: "startup_profile_photos",
+                        resource_type: "image"
+                    },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                ).end(req.file.buffer);
+            });
+
+            profilePhotoUrl = result.secure_url;
+        }
 
         const profileData = {
             ...parsedPersonalDetail,
             ...parsedCompanyDetail,
             investors: parsedInvestors,
-            profilePhoto: req.file ? req.file.buffer : null,
+            profilePhoto: profilePhotoUrl, // Store Cloudinary URL in MongoDB
         };
 
         const profile = new Startup(profileData);
-        console.log(profile);
         await profile.save();
 
-        res.status(201).json({ message: 'Profile updated successfully' });
+        res.status(201).json({ message: 'Profile updated successfully', profile });
     } catch (error) {
         console.error('Error updating profile:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
+
 
 app.get('/api/startups', async (req, res) => {
     try {
@@ -329,6 +408,7 @@ app.get('/find/startups', async (req, res) => {
         const username=await User.findOne({_id:userId});
 
         const startups = await Startup.findOne({title:username.userId});
+
         console.log(startups);
         res.json(startups);
     } catch (error) {

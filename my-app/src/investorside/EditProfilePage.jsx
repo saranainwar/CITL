@@ -1,270 +1,432 @@
-import { useState, useRef } from "react";
-import axios from "axios";
-import { Link, useNavigate } from 'react-router-dom';
-import { useParams, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
+import { useParams,useNavigate } from 'react-router-dom';
 const EditProfilePage = () => {
-  
-  const navigate = useNavigate();
-
-  
+  const { userId } = useParams(); 
   const [profile, setProfile] = useState({
-    title: "",
-    email: "",
-    contactNumber: "",
-    companyFounded: "",
-    shortDescription: "",
-    bio: "",
-    gender: "",
-    birthdate: "",
-    location: "",
-    returnOnInvestment: "",
-    profilePhoto: null, 
+    title: '',
+    email: '',
+    contactNumber: '',
+    companyFounded: '',
+    shortDescription: '',
+    totalInvestments: 0,
+    totalfundInvested: 0,
+    bio: '',
+    gender: '',
+    birthdate: '',
+    location: '',
+    returnOnInvestment: '',
+    profilePhoto: null,
+    topInvestments: [],
+    averageReturnOnInvestment: 0,
+    investmentStage: '',
+    industriesOfInterest: [],
+    geographicPreference: [],
+    investmentRange: '',
+    yearsOfExperience: 0,
+    portfolioCompanies: [],
+    exitHistory: [],
+    keyAchievements: [],
   });
-
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const fileInputRef = useRef(null);
-  const [message, setMessage] = useState(""); // To hold success/error messages
-
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProfile({ ...profile, [name]: value });
+const navigate = useNavigate();
+  const handleInputChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === 'profilePhoto') {
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        [name]: files[0],
+      }));
+    } else {
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        [name]: value === '' ? '' : value,
+      }));
+    }
   };
 
-  // Handle form submit
+  const handleArrayChange = (e, arrayName) => {
+    e.preventDefault();
+    const { value } = e.target;
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      [arrayName]: [...prevProfile[arrayName], value],
+    }));
+    e.target.value = '';
+  };
+
+  const handleArrayRemove = (index, arrayName) => {
+    e.preventDefault();
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      [arrayName]: prevProfile[arrayName].filter((_, i) => i !== index),
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Validate required fields
-    if (!profile.title || !profile.email || !profile.contactNumber) {
-      setMessage("Please fill out all required fields.");
-      return; // Stop the submission if validation fails
-    }
 
     const formData = new FormData();
-    Object.keys(profile).forEach((key) => {
-      formData.append(key, profile[key]);
+    formData.append('title', profile.title);
+    formData.append('userId', userId);
+    formData.append('email', profile.email);
+    formData.append('contactNumber', profile.contactNumber);
+    formData.append('companyFounded', profile.companyFounded);
+    formData.append('shortDescription', profile.shortDescription);
+    formData.append('bio', profile.bio);
+    formData.append('gender', profile.gender);
+    formData.append('birthdate', profile.birthdate);
+    formData.append('location', profile.location);
+    formData.append('returnOnInvestment', profile.returnOnInvestment);
+    formData.append('totalInvestments', profile.totalInvestments);
+    formData.append('totalfundInvested', profile.totalfundInvested);
+    formData.append('averageReturnOnInvestment', profile.averageReturnOnInvestment);
+    formData.append('yearsOfExperience', profile.yearsOfExperience);
+    profile.geographicPreference.forEach((preference) => {
+      formData.append('geographicPreference', preference);
     });
-    console.log("Submitting profile data:", profile);
+    profile.exitHistory.forEach((exit) => {
+      formData.append('exitHistory', exit);
+    });
+    profile.keyAchievements.forEach((achievement) => {
+      formData.append('keyAchievements', achievement);
+    });
+   
+    formData.append('investmentRange', profile.investmentRange);
+    profile.topInvestments.forEach((investment) => {
+      formData.append('topInvestments', investment);
+    });
+    formData.append('profilePhoto', profile.profilePhoto);
+
     try {
-      const response = await axios.post('http://localhost:3000/profile/update', formData, {
+      await axios.post('/profile/update', formData, {
         headers: {
-          "Content-Type": "multipart/form-data", // Important for file uploads
+          'Content-Type': 'multipart/form-data',
         },
       });
-
-      // Handle success response
-      setMessage("Profile saved successfully!");
-      console.log("Profile saved:", response.data);
-      navigate(`/investor/${profile.email}`);
+      // Handle successful response
+      console.log('Profile updated successfully');
+      navigate("/");
+      
     } catch (error) {
       // Handle error response
-      setMessage("Failed to save profile. Please try again.");
-      console.error("Error saving profile:", error);
+      console.error('Error updating profile:', error);
     }
-  };
-  
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
-      setProfile({ ...profile, profilePhoto: file }); // Update the state with the file
-    }
-  };
-
-  const handleRemovePhoto = () => {
-    setPreviewUrl(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-    setProfile({ ...profile, profilePhoto: null }); // Reset profile photo state
-  };
-
-  const handleUpdateClick = () => {
-    fileInputRef.current.click();
   };
 
   return (
-    <div className="min-h-screen">
-      <nav className="flex flex-col w-full max-md:ml max-md:w-full">
-        <div className="text-3xl mt-5 ml-5 font-extrabold text-orange-700">Pitchers</div>
-      </nav>
+    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
+      <h1 className="text-3xl font-bold text-orange-600 mb-6 text-center">Edit Profile</h1>
 
-      {/* Form Section */}
-      <div className="flex-1 p-10 ">
-        <h2 className="text-indigo-900 ml-[43%] text-2xl font-bold mb-3">Edit profile</h2>
-
-        {message && <div className="mb-4 text-center text-green-600">{message}</div>} {/* Display message */}
-
-        <form onSubmit={handleSubmit} className="bg-gray-100 ml-[17%] p-4 rounded-lg shadow-sm max-w-3xl">
-          <div className="grid grid-cols-2 gap-6 ">
-            <div>
-              <label className="block mt-[10%] text-black-100 font-semibold">Title</label>
-              <input
-                type="text"
-                name="title"
-                value={profile.title}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-sm px-1 py-4 border-gray-500 text-gray-500 shadow-sm "
-              />
-            </div>
-
-            <div className="flex flex-col items-center">
-              <div className="relative w-32 h-32">
-                <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                  {previewUrl ? (
-                    <img src={previewUrl} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-gray-400">No photo</span>
-                  )}
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  name="profilePhoto"
-                  onChange={handleFileChange}
-                  className="hidden"
-                  accept="image/*"
-                />
-                {previewUrl ? (
-                  <button
-                    onClick={handleRemovePhoto}
-                    className="absolute bottom-0 right-1 bg-orange-400 text-white rounded-full w-6 h-6 transform translate-x-1/2 -translate-y-1/2"
-                    aria-label="Remove photo"
-                  >
-                    ×
-                  </button>
-                ) : (
-                  <button
-                    onClick={handleUpdateClick}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    aria-label="Add photo"
-                  />
-                )}
-              </div>
-            </div>
+      {/* Personal Information */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4 text-blue-600">Personal Information</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="text-blue-600 font-medium">Title</label>
+            <input
+              type="text"
+              name="title"
+              value={profile.title || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Title"
+            />
           </div>
-
-          <div className="grid grid-cols-2 gap-6 mb-4">
-            <div>
-              <label className="block text-black-100 font-semibold">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={profile.email}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-sm px-1 py-1 border-gray-500 text-gray-500 shadow-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-black-100 font-semibold">Contact Number</label>
-              <input
-                type="text"
-                name="contactNumber"
-                value={profile.contactNumber}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-sm px-1 py-1 border-gray-500 text-gray-500 shadow-sm"
-              />
-            </div>
+          <div>
+            <label className="text-blue-600 font-medium">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={profile.email || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Email"
+            />
           </div>
-
-          <div className="grid grid-cols-2 gap-6 mb-4">
-            <div>
-              <label className="block text-black-100 font-semibold">Short Description</label>
-              <input
-                type="text"
-                name="shortDescription"
-                value={profile.shortDescription}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-sm px-1 py-1 border-gray-500 text-gray-500 shadow-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-black-100 font-semibold">Company Founded</label>
-              <input
-                type="text"
-                name="companyFounded"
-                value={profile.companyFounded}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-sm px-1 py-1 border-gray-500 text-gray-500 shadow-sm"
-              />
-            </div>
+          <div>
+            <label className="text-blue-600 font-medium">Contact Number</label>
+            <input
+              type="text"
+              name="contactNumber"
+              value={profile.contactNumber || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Contact Number"
+            />
           </div>
-
-          <div className="grid grid-cols-2 gap-6 mb-4">
-            <div>
-              <label className="span text-black-100 font-semibold">Gender</label>
-              <label className="ml-[26%] text-black-100 font-semibold">Birthdate</label> <br />
-
-              <div className="flex gap-1">
-                <input
-                  type="text"
-                  name="gender"
-                  value={profile.gender}
-                  onChange={handleChange}
-                  className="mt-1  w-full rounded-sm px-1 py-1 border-gray-500 text-gray-500 shadow-sm"
-                />
-
-                <input
-                  type="date"
-                  name="birthdate"
-                  value={profile.birthdate}
-                  onChange={handleChange}
-                  className="mt-1 w-full rounded-sm px-1 py-1 border-gray-500 text-gray-500 shadow-sm"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-black-100 font-semibold">Bio</label>
-              <input
-                type="text"
-                name="bio"
-                value={profile.bio}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-sm px-1 py-1 border-gray-500 text-gray-500 shadow-sm"
-              />
-            </div>
+          <div>
+            <label className="text-blue-600 font-medium">Location</label>
+            <input
+              type="text"
+              name="location"
+              value={profile.location || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Location"
+            />
           </div>
-
-          <div className="grid grid-cols-2 gap-6 mb-4">
-            <div>
-              <label className="block text-black-100 font-semibold">Location</label>
-              <input
-                type="text"
-                name="location"
-                value={profile.location}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-sm px-1 py-1 border-gray-500 text-gray-500 shadow-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-black-100 font-semibold">Return on Investment</label>
-              <input
-                type="text"
-                name="returnOnInvestment"
-                value={profile.returnOnInvestment}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-sm px-1 py-1 border-gray-500 text-gray-500 shadow-sm"
-              />
-            </div>
+          <div>
+            <label className="text-blue-600 font-medium">Birthdate</label>
+            <input
+              type="date"
+              name="birthdate"
+              value={profile.birthdate || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
           </div>
-
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              className="bg-orange-600 text-white rounded-md px-4 py-2 mt-4 hover:bg-orange-500 focus:outline-none focus:ring focus:ring-orange-300"
+          <div>
+            <label className="text-blue-600 font-medium">Bio</label>
+            <input
+              type="text"
+              name="bio"
+              value={profile.bio || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="bio"
+            />
+          </div>
+          <div>
+            <label className="text-blue-600 font-medium">Gender</label>
+            <select
+              name="gender"
+              value={profile.gender || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
-              Save Profile
-            </button>
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+
+      {/* Investment Information */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4 text-blue-600">Investment Information</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="text-blue-600 font-medium">Total Investments</label>
+            <input
+              type="number"
+              name="totalInvestments"
+              value={profile.totalInvestments || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Total Investments"
+            />
+          </div>
+          <div>
+            <label className="text-blue-600 font-medium">Total Fund Invested</label>
+            <input
+              type="number"
+              name="totalfundInvested"
+              value={profile.totalfundInvested || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Total Fund Invested"
+            />
+          </div>
+          <div>
+            <label className="text-blue-600 font-medium">Investment Range</label>
+            <input
+              type="text"
+              name="investmentRange"
+              value={profile.investmentRange || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Investment Range"
+            />
+          </div>
+          {/* Investment Stage */}
+        
+          <div>
+            <label className="text-blue-600 font-medium">Return on Investment</label>
+            <input
+              type="number"
+              name="returnOnInvestment"
+              value={profile.returnOnInvestment || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="ROI (%)"
+            />
+          </div>
+          <div>
+            <label className="text-blue-600 font-medium">Average ROI</label>
+            <input
+              type="number"
+              name="averageReturnOnInvestment"
+              value={profile.averageReturnOnInvestment || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Average ROI (%)"
+            />
+          </div>
+          <div>
+            <label className="text-blue-600 font-medium">Years of Experience</label>
+            <input
+              type="number"
+              name="yearsOfExperience"
+              value={profile.yearsOfExperience || ''}
+              onChange={handleInputChange}
+              className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Years of Experience"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Geographic Preferences */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4 text-blue-600">Geographic Preferences</h2>
+        <input
+          type="text"
+          className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full mb-4 text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Add geographic preference"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') handleArrayChange(e, 'geographicPreference');
+          }}
+        />
+        <div>
+          {profile.geographicPreference.map((preference, index) => (
+            <div key={index} className="bg-green-100 p-3 rounded-md flex justify-between items-center mb-2">
+              <span className="text-green-600">{preference}</span>
+              <button
+                type="button"
+                onClick={() => handleArrayRemove(index, 'geographicPreference')}
+                className="text-red-600 font-bold"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/*Industry of interest */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4 text-blue-600">Industry of Interest</h2>
+        <input
+          type="text"
+          className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full mb-4 text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Add industry of interest"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') handleArrayChange(e, 'industriesOfInterest');
+          }}
+        />
+        <div>
+          {profile.industriesOfInterest.map((preference, index) => (
+            <div key={index} className="bg-green-100 p-3 rounded-md flex justify-between items-center mb-2">
+              <span className="text-green-600">{preference}</span>
+              <button
+                type="button"
+                onClick={() => handleArrayRemove(index, 'industriesOfInterest')}
+                className="text-red-600 font-bold"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Profile Photo */}
+      <div className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4 text-blue-600">Profile Photo</h2>
+          <input
+            type="file"
+         name="profilePhoto"
+          onChange={handleInputChange}
+          className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+     </div>
+
+
+      {/* Exit History */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4 text-blue-600">Exit History</h2>
+        <input
+          type="text"
+          className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full mb-4 text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Add exit history entry"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') handleArrayChange(e, 'exitHistory');
+          }}
+        />
+        <div>
+          {profile.exitHistory.map((exit, index) => (
+            <div key={index} className="bg-green-100 p-3 rounded-md flex justify-between items-center mb-2">
+              <span className="text-green-600">{exit}</span>
+              <button
+                type="button"
+                onClick={() => handleArrayRemove(index, 'exitHistory')}
+                className="text-red-600 font-bold"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/*top investments*/}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4 text-blue-600">Top investments</h2>
+        <input
+          type="text"
+          className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full mb-4 text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Add top investment"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') handleArrayChange(e, 'topInvestments');
+          }}
+        />
+        <div>
+          {profile.topInvestments.map((exit, index) => (
+            <div key={index} className="bg-green-100 p-3 rounded-md flex justify-between items-center mb-2">
+              <span className="text-green-600">{exit}</span>
+              <button
+                type="button"
+                onClick={() => handleArrayRemove(index, 'topInvestments')}
+                className="text-red-600 font-bold"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Key Achievements */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4 text-blue-600">Key Achievements</h2>
+        <input
+          type="text"
+          className="bg-gray-100 border border-gray-300 px-4 py-2 rounded-md w-full mb-4 text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Add key achievement"
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') handleArrayChange(e, 'keyAchievements');
+          }}
+        />
+        <div>
+          {profile.keyAchievements.map((achievement, index) => (
+            <div key={index} className="bg-green-100 p-3 rounded-md flex justify-between items-center mb-2">
+              <span className="text-green-600">{achievement}</span>
+              <button
+                type="button"
+                onClick={() => handleArrayRemove(index, 'keyAchievements')}
+                className="text-red-600 font-bold"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Save Button */}
+      <button type="submit"className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded w-full font-semibold">
+        Save Profile
+      </button>
+    </form>
   );
 };
 

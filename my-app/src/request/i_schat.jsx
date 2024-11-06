@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { MessageCircle, ChevronRight, Building2, Calendar, DollarSign, AlertCircle, Loader } from "lucide-react";
 import { format } from 'date-fns';
 import axios from 'axios';
+import IHeader from '../investorside/IHeader';
 
 // Configure axios defaults
 axios.defaults.baseURL = 'http://localhost:3000'; // Update this to match your backend URL
 axios.defaults.withCredentials = true;
 
 const StartupDashboard = () => {
-  const [investor_id] = useState('6724a1d7693efd5fd53f8bc9');
+  const investor_id = localStorage.getItem('userId');
   const [startups, setStartups] = useState([]);
   const [selectedStartup, setSelectedStartup] = useState(null);
   const [showChat, setShowChat] = useState(false);
@@ -104,6 +105,8 @@ const StartupDashboard = () => {
   }
 
   return (
+    <>
+    <IHeader></IHeader>
     <div className="flex h-screen bg-gray-50">
       {/* Startups List Panel */}
       <div className={`${showChat ? 'w-1/3' : 'w-full'} border-r bg-white`}>
@@ -239,6 +242,7 @@ const StartupDashboard = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
