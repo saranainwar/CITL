@@ -13,7 +13,7 @@ function RegistrationForm() {
     confirmPassword: '',
     role: 'startup', // Default role to startup
   });
-
+  
   const navigate = useNavigate(); // Initialize the navigate hook
 
   const handleChange = (e) => {
@@ -28,12 +28,13 @@ function RegistrationForm() {
     try {
       const response = await axios.post('http://localhost:3000/authorize/register', formData);
       alert(response.data.message);
-      
+      const userId = response.data._id;
+      console.log('User ID:', userId);
       // Check the role and redirect accordingly
       if (formData.role === 'startup') {
         navigate('/edit_startup');
       } else {
-        navigate('/investor_profile');
+        navigate(`/investor_profile/${userId}`);
       }
       
     } catch (error) {

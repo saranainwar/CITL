@@ -17,7 +17,7 @@ function Header() {
         <a onClick={handleProfileClick} className="my-auto cursor-pointer">
           Profile
         </a>
-        <a href="/investor_search" className="my-auto">Find Investor</a>
+        {/* <a href="/investor_search" className="my-auto">Find Investor</a> */}
         <a href="/startupconnect" className="my-auto">Connect</a>
         <a href="/investorchat" className="my-auto">Chat</a>
       </nav>

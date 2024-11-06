@@ -17,6 +17,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const upload = multer();
 const axios = require('axios');
+const jwt = require('jsonwebtoken');
 // Middleware
 app.use(cors({
     credentials: true,
@@ -26,7 +27,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use(session({
-    secret: 'your_secret_key',
+    secret: 'uUilkjkeeR',
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } // Set secure to true in production with HTTPS
@@ -107,6 +108,7 @@ app.get("/auth/google/callback", passport.authenticate('google', { failureRedire
     }
 });
 
+
 // Login route
 app.post('/authorize/login', async (req, res) => {
     const { userId, password } = req.body;
@@ -114,24 +116,30 @@ app.post('/authorize/login', async (req, res) => {
     try {
         const user = await User.findOne({ userId });
         if (!user) {
-            
             return res.status(400).json({ message: 'Invalid user ID' });
         }
 
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (isMatch) {
+            // Generate JWT
+            const token = jwt.sign(
+                { id: user._id, role: user.role, email: user.email }, // payload
+                process.env.JWT_SECRET, // secret key from environment variable
+                { expiresIn: '1h' } // token expiration
+            );
+
             // Determine redirect URL based on user role
             let redirectUrl;
             if (user.role === 'investor') {
-                redirectUrl = `http://localhost:5173/investor/${user.email}`;
+                redirectUrl = `http://localhost:5173/investor/${user._id}`;
             } else if (user.role === 'startup') {
                 redirectUrl = `http://localhost:5173/startup_profile/${user._id}`;
             } else {
                 return res.status(400).json({ message: 'Unknown role' });
             }
             
-            // Send the URL as JSON
-            return res.json({ redirectUrl });
+            // Send the JWT and URL as JSON
+            return res.json({ token, redirectUrl });
         } else {
             return res.status(400).json({ message: 'Invalid password' });
         }
@@ -140,8 +148,6 @@ app.post('/authorize/login', async (req, res) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 });
-
-
 // Register route
 app.post('/authorize/register', async (req, res) => {
     const { name, email, userId, password, confirmPassword, role } = req.body;
@@ -151,6 +157,7 @@ app.post('/authorize/register', async (req, res) => {
     }
 
     try {
+        // Check if the user already exists
         const existingUser = await User.findOne({ userId });
         if (existingUser) {
             return res.status(400).json({ message: 'Username is already taken' });
@@ -161,9 +168,11 @@ app.post('/authorize/register', async (req, res) => {
             return res.status(400).json({ message: 'Email is already registered' });
         }
 
+        // Hash the password
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
 
+        // Create a new user
         const newUser = new User({
             name,
             email,
@@ -173,12 +182,31 @@ app.post('/authorize/register', async (req, res) => {
         });
 
         await newUser.save();
-        res.status(201).json({ message: 'User registered successfully' });
+
+        // Generate a JWT token
+        const token = jwt.sign(
+            { id: newUser._id, email: newUser.email, role: newUser.role },
+            process.env.JWT_SECRET,  // Ensure you have JWT_SECRET in your environment variables
+            { expiresIn: '1h' }
+        );
+
+        // Set the token as an HTTP-only, secure cookie
+        res.cookie('token', token, {
+            httpOnly: true,  // Not accessible by JavaScript
+            secure: true,    // Sent only over HTTPS
+            sameSite: 'Lax', // Restricts cross-site requests
+            maxAge: 3600000  // 1 hour in milliseconds
+        });
+
+        // Send a success message
+        res.status(201).json({ message: 'User registered successfully', _id: newUser._id  });
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
+
 app.get('/api/news', async (req, res) => {
     try {
       console.log("Fetching news articles...");
@@ -200,8 +228,44 @@ app.get('/api/news', async (req, res) => {
     }
   });
   
-app.post('/profile/update', upload.single('profilePhoto'), async (req, res) => {
+  app.post('/profile/update', upload.single('profilePhoto'), async (req, res) => {
     const {
+     userId,
+      title,
+      email,
+      contactNumber,
+      companyFounded,
+      shortDescription,
+      bio,
+      gender,
+      birthdate,
+      location,
+      returnOnInvestment,
+      totalInvestments,
+      totalfundInvested,
+      averageReturnOnInvestment,
+      yearsOfExperience,
+      geographicPreference,
+      exitHistory,
+      keyAchievements,
+      investmentRange,
+      topInvestments,
+      industriesOfInterest,
+    } = req.body;
+  
+    // Parse any numerical values from strings
+    const numericFields = {
+      totalInvestments: Number(totalInvestments),
+      totalfundInvested: Number(totalfundInvested),
+      averageReturnOnInvestment: Number(averageReturnOnInvestment),
+      yearsOfExperience: Number(yearsOfExperience),
+      returnOnInvestment: Number(returnOnInvestment),
+    };
+  
+    try {
+      // Create or update profile based on your application logic
+      const profile = new Profile({
+        userId,
         title,
         email,
         contactNumber,
@@ -211,41 +275,36 @@ app.post('/profile/update', upload.single('profilePhoto'), async (req, res) => {
         gender,
         birthdate,
         location,
-        returnOnInvestment,
-    } = req.body; // req.body is now populated correctly
-
-    console.log(title + " " + email); // Should log the title and email correctly
-
-    try {
-        const profile = new Profile({
-            title,
-            email,
-            contactNumber,
-            companyFounded,
-            shortDescription,
-            bio,
-            gender,
-            birthdate,
-            location,
-            returnOnInvestment,
-            profilePhoto: req.file ? req.file.buffer : null, // Handle file if it exists
-        });
-
-        await profile.save();
-        res.status(201).json({ message: 'Profile updated successfully' });
+        returnOnInvestment: numericFields.returnOnInvestment,
+        totalInvestments: numericFields.totalInvestments,
+        totalfundInvested: numericFields.totalfundInvested,
+        averageReturnOnInvestment: numericFields.averageReturnOnInvestment,
+        yearsOfExperience: numericFields.yearsOfExperience,
+        geographicPreference: geographicPreference ? geographicPreference.split(',') : [],
+        exitHistory: exitHistory ? exitHistory.split(',') : [],
+        keyAchievements: keyAchievements ? keyAchievements.split(',') : [],
+        investmentRange,
+        topInvestments: topInvestments ? topInvestments.split(',') : [],
+        profilePhoto: req.file ? req.file.buffer : null,
+        industriesOfInterest: industriesOfInterest ? industriesOfInterest.split(',') : [],
+    });
+  
+      await profile.save();
+      res.status(201).json({ message: 'Profile updated successfully' });
     } catch (error) {
-        console.error('Error updating profile:', error);
-        res.status(500).json({ message: 'Internal server error' });
+      console.error('Error updating profile:', error);
+      res.status(500).json({ message: 'Internal server error' });
     }
-});
+  });
+   
 
 // Display profile route
 app.get('/profile', async (req, res) => {
-    const { email } = req.query;
-    console.log(email);
+    const { userid } = req.query;
+    console.log(userid);
     try {
         // Find the profile by email
-        const profile = await Profile.findOne({ email });
+        const profile = await Profile.findOne({ userid });
         console.log(profile);
         if (!profile) {
             return res.status(404).json({ message: 'Profile not found' });

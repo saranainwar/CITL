@@ -25,22 +25,24 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/startup" element={<Startup />} />
+        <Route path="/" element={<Homepage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegistrationPage />} />
-        <Route path="/" element={<Homepage />} />
-        <Route path="/startup_search" element={<PitchersApp/>}/>
         <Route path="/event" element={<NetworkingEvents />} />
-        <Route path="/investor_profile" element={<EditProfilePage />} />
-        <Route path="/investor/:email" element={<InvestorProfilePage />} />
-        <Route path="/investor_search" element={<Layout />} />
-        <Route path="/investorconnect" element={<InvestorC/>} />
-        <Route path="/edit_startup" element={<EditSProfile />} />
-        <Route path="/startupconnect" element={<StartupConnect />} />
-        <Route path="/startupchat" element={<StartupDashboard/>} />
-        <Route path="/investorchat" element={<AcceptedInvestors/>} />
-        <Route path="/startup_profile/:userId" element={<Startup/>} />
         <Route path="/analysis" element={<StockAnalysis/>} />
+      
+        <Route path="/investor_profile/:userId" element={<EditProfilePage />} />
+        <Route path="/investor/:userId" element={<InvestorProfilePage />} />
+        {/* <Route path="/investor_search" element={<Layout />} /> */}
+        <Route path="/investorconnect" element={<InvestorC/>} />
+        <Route path="/startupchat" element={<StartupDashboard/>} />
+
+        <Route path="/edit_startup" element={<EditSProfile />} />
+        <Route path="/startup_profile/:userId" element={<Startup/>} />
+        {/* <Route path="/startup_search" element={<PitchersApp/>}/> */}
+        <Route path="/startupconnect" element={<StartupConnect />} />
+        <Route path="/investorchat" element={<AcceptedInvestors/>} />
+        
       </Routes>
     </Router>
   );

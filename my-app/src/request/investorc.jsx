@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import IHeader from '../investorside/IHeader';
 
 const InvestorConnect = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -23,7 +24,8 @@ const InvestorConnect = () => {
       try {
         setLoading(true);
         setError(null);
-        const investorId = "6724a1d7693efd5fd53f8bc9";
+        const investorId = localStorage.getItem('userId');
+        console.log(investorId);
         const startupsResponse = await axios.get(`http://localhost:3000/api/startupN/${investorId}`);
         const connectionsResponse = await axios.get(`http://localhost:3000/api/startup/${investorId}`);
         const collectRespons = await axios.get(`http://localhost:3000/api/startupreq/${investorId}`);
@@ -138,8 +140,10 @@ const InvestorConnect = () => {
   }
 
   return (
+    <>
+    <IHeader></IHeader>
     <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Investor Connect</h1>
+      <h1 className="text-3xl font-bold mb-6">Connect with Startups</h1>
 
       {error && (
         <div className="mb-6 p-4 bg-red-100 text-red-700 rounded">
@@ -380,6 +384,7 @@ const InvestorConnect = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
