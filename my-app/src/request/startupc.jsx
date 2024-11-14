@@ -87,7 +87,7 @@ const StartupConnect = () => {
   const handleRequestSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log(startupId)
+      
       const response = await axios.post('http://localhost:3000/api/investorrequest', {
 
         startup_id: startupId,

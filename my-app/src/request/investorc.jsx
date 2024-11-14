@@ -97,7 +97,8 @@ const InvestorConnect = () => {
 
   const handleConnect = async () => {
     try {
-      const investorId = "6724a1d7693efd5fd53f8bc9";
+      const investorId = localStorage.getItem('userId');
+      
       const requestData = {
         startupId: currentStartup._id,
         investorId: investorId,

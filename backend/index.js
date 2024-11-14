@@ -21,7 +21,7 @@ const jwt = require('jsonwebtoken');
 // Middleware
 app.use(cors({
     credentials: true,
-    origin: 'http://localhost:5173',
+    origin: 'https://deploy-mern-lwhq.vercel.app',
 }));
 
 app.use(express.json());
