@@ -1,0 +1,43 @@
+.x
+{
+    width:1000px;
+    margin-left: 300px;
+    margin-top: 20px;;
+}
+
+
+.transition-section {
+    opacity: 0;
+    transform: scale(0.8); /* Smaller scale initially */
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  
+  .transition-section.expanded {
+    opacity: 1;
+    transform: scale(1); /* Full scale when in view */
+  }
+  
+  .transition-box {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  
+  .transition-box.expanded {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Base state of sections with translateY animation */
+.transition-up {
+    opacity: 0;
+    transform: translateY(50px); /* Start below their normal position */
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  
+  /* State when the sections are in view */
+  .transition-up.expanded {
+    opacity: 1;
+    transform: translateY(0); /* Move to normal position */
+  }
+  
